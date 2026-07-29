@@ -41,3 +41,14 @@ export async function getTransactionOptions() {
 
   return response.data;
 }
+
+
+export async function getTransaction(
+  transactionId: number,
+) {
+  const response = await api.get<Transaction>(
+    `/transactions/${transactionId}/`,
+  );
+
+  return response.data;
+}

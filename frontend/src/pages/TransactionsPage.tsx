@@ -19,10 +19,12 @@ import type {
 import {
   ClearOutlined,
   FilterOutlined,
+  EyeOutlined,
   ReloadOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
 import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
   getTransactionOptions,
@@ -93,6 +95,7 @@ interface FilterFormValues {
 
 
 export default function TransactionsPage() {
+  const navigate = useNavigate();
   const [form] = Form.useForm<FilterFormValues>();
   const { message } = AntApp.useApp();
 
@@ -281,11 +284,30 @@ export default function TransactionsPage() {
       key: "amount",
       width: 140,
       align: "right",
-      fixed: "right",
       render: (value: string) => (
         <Text strong>
           {formatCurrency(value)}
         </Text>
+      ),
+    },
+    {
+      title: "Ações",
+      key: "actions",
+      width: 100,
+      align: "center",
+      fixed: "right",
+      render: (_, transaction) => (
+        <Button
+          type="link"
+          icon={<EyeOutlined />}
+          onClick={() => {
+            navigate(
+              `/transactions/${transaction.id}`,
+            );
+          }}
+        >
+          Ver
+        </Button>
       ),
     },
   ];
@@ -518,7 +540,7 @@ export default function TransactionsPage() {
           columns={columns}
           dataSource={data.results}
           scroll={{
-            x: 1310,
+            x: 1410,
           }}
           pagination={{
             current: data.page,

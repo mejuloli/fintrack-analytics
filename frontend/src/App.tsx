@@ -25,6 +25,9 @@ const TransactionsPage = lazy(
   () => import("./pages/TransactionsPage"),
 );
 
+const TransactionDetailsPage = lazy(
+  () => import("./pages/TransactionDetailsPage"),
+);
 
 function PageLoader() {
   return (
@@ -60,6 +63,11 @@ function App() {
             <Route
               path="/transactions"
               element={<TransactionsPage />}
+            />
+
+            <Route
+              path="/transactions/:transactionId"
+              element={<TransactionDetailsPage />}
             />
           </Route>
         </Route>
