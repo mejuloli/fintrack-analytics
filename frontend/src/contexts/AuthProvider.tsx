@@ -7,16 +7,20 @@ import {
 } from "react";
 
 import { api } from "../services/api";
+import {
+  AUTH_SESSION_EXPIRED_EVENT,
+} from "../services/authEvents";
+import {
+  clearAuthTokens,
+  hasAuthSession,
+  setAuthTokens,
+} from "../services/authStorage";
 import type {
   LoginCredentials,
   TokenPair,
   User,
 } from "../types/auth";
 import { AuthContext } from "./auth-context";
-
-
-const ACCESS_TOKEN_KEY = "fintrack.accessToken";
-const REFRESH_TOKEN_KEY = "fintrack.refreshToken";
 
 
 interface AuthProviderProps {
@@ -32,25 +36,43 @@ export function AuthProvider({
 
 
   const clearSession = useCallback(() => {
-    localStorage.removeItem(ACCESS_TOKEN_KEY);
-    localStorage.removeItem(REFRESH_TOKEN_KEY);
+    clearAuthTokens();
     setUser(null);
   }, []);
 
 
   useEffect(() => {
-    async function loadCurrentUser() {
-      const accessToken = localStorage.getItem(
-        ACCESS_TOKEN_KEY,
-      );
+    function handleSessionExpired() {
+      clearSession();
+      setLoading(false);
+    }
 
-      if (!accessToken) {
+    window.addEventListener(
+      AUTH_SESSION_EXPIRED_EVENT,
+      handleSessionExpired,
+    );
+
+    return () => {
+      window.removeEventListener(
+        AUTH_SESSION_EXPIRED_EVENT,
+        handleSessionExpired,
+      );
+    };
+  }, [clearSession]);
+
+
+  useEffect(() => {
+    async function loadCurrentUser() {
+      if (!hasAuthSession()) {
         setLoading(false);
         return;
       }
 
       try {
-        const response = await api.get<User>("/auth/me/");
+        const response = await api.get<User>(
+          "/auth/me/",
+        );
+
         setUser(response.data);
       } catch {
         clearSession();
@@ -66,20 +88,13 @@ export function AuthProvider({
   const login = useCallback(
     async (credentials: LoginCredentials) => {
       try {
-        const tokenResponse = await api.post<TokenPair>(
-          "/auth/login/",
-          credentials,
-        );
+        const tokenResponse =
+          await api.post<TokenPair>(
+            "/auth/login/",
+            credentials,
+          );
 
-        localStorage.setItem(
-          ACCESS_TOKEN_KEY,
-          tokenResponse.data.access,
-        );
-
-        localStorage.setItem(
-          REFRESH_TOKEN_KEY,
-          tokenResponse.data.refresh,
-        );
+        setAuthTokens(tokenResponse.data);
 
         const userResponse = await api.get<User>(
           "/auth/me/",
