@@ -226,7 +226,7 @@ export default function TransactionsPage() {
       key: "customer",
       width: 220,
       render: (_, transaction) => (
-        <Space direction="vertical" size={0}>
+        <Space orientation="vertical" size={0}>
           <Text strong>
             {transaction.customer.name}
           </Text>
