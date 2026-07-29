@@ -45,6 +45,8 @@ INSTALLED_APPS = [
 
     "apps.core.apps.CoreConfig",
     "apps.users.apps.UsersConfig",
+    "apps.customers.apps.CustomersConfig",
+    "apps.transactions.apps.TransactionsConfig",
 ]
 
 
