@@ -1,104 +1,69 @@
 import {
-  Button,
   Card,
-  Flex,
-  Layout,
-  Space,
-  Tag,
+  Col,
+  Row,
+  Statistic,
   Typography,
 } from "antd";
 import {
-  LogoutOutlined,
+  DatabaseOutlined,
   SafetyCertificateOutlined,
+  SwapOutlined,
 } from "@ant-design/icons";
 
 import { useAuth } from "../hooks/useAuth";
 
 
-const { Header, Content } = Layout;
-const { Paragraph, Text, Title } = Typography;
+const { Paragraph, Title } = Typography;
 
 
-export function DashboardPage() {
-  const { user, logout } = useAuth();
+export default function DashboardPage() {
+  const { user } = useAuth();
 
   return (
-    <Layout style={{ minHeight: "100vh" }}>
-      <Header
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          paddingInline: 24,
-          background: "#ffffff",
-          borderBottom: "1px solid #e5e7eb",
-        }}
-      >
-        <Flex align="center" gap={12}>
-          <SafetyCertificateOutlined
-            style={{ fontSize: 22 }}
-          />
+    <>
+      <Title level={2}>
+        Olá, {user?.name}
+      </Title>
 
-          <Text strong>
-            FinTrack Analytics
-          </Text>
-        </Flex>
+      <Paragraph type="secondary">
+        Visão geral da plataforma de análise de
+        transações.
+      </Paragraph>
 
-        <Space>
-          <Text>{user?.name}</Text>
+      <Row gutter={[16, 16]}>
+        <Col xs={24} md={8}>
+          <Card>
+            <Statistic
+              title="Clientes"
+              value={20}
+              prefix={<DatabaseOutlined />}
+            />
+          </Card>
+        </Col>
 
-          <Tag color={user?.role === "ADMIN" ? "blue" : "green"}>
-            {user?.role === "ADMIN"
-              ? "Administrador"
-              : "Analista"}
-          </Tag>
+        <Col xs={24} md={8}>
+          <Card>
+            <Statistic
+              title="Transações"
+              value={300}
+              prefix={<SwapOutlined />}
+            />
+          </Card>
+        </Col>
 
-          <Button
-            icon={<LogoutOutlined />}
-            onClick={logout}
-          >
-            Sair
-          </Button>
-        </Space>
-      </Header>
-
-      <Content
-        style={{
-          padding: 24,
-          background: "#f3f5f8",
-        }}
-      >
-        <Card>
-          <Title level={2}>
-            Olá, {user?.name}
-          </Title>
-
-          <Paragraph>
-            A autenticação do FinTrack Analytics está
-            funcionando.
-          </Paragraph>
-
-          <Paragraph>
-            Este dashboard ainda está vazio. No próximo
-            checkpoint criaremos o layout lateral e o domínio
-            de transações.
-          </Paragraph>
-
-          <Space direction="vertical">
-            <Text>
-              <strong>E-mail:</strong> {user?.email}
-            </Text>
-
-            <Text>
-              <strong>Perfil:</strong> {user?.role}
-            </Text>
-
-            <Text>
-              <strong>ID:</strong> {user?.id}
-            </Text>
-          </Space>
-        </Card>
-      </Content>
-    </Layout>
+        <Col xs={24} md={8}>
+          <Card>
+            <Statistic
+              title="Ambiente"
+              value="Protegido"
+              prefix={
+                <SafetyCertificateOutlined />
+              }
+            />
+          </Card>
+        </Col>
+      </Row>
+    </>
   );
 }
