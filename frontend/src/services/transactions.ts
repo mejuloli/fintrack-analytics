@@ -52,3 +52,28 @@ export async function getTransaction(
 
   return response.data;
 }
+
+
+export async function exportTransactionsCsv(
+  filters: TransactionFilters,
+) {
+  const {
+    page: _page,
+    page_size: _pageSize,
+    ...exportFilters
+  } = filters;
+
+  const response = await api.get<Blob>(
+    "/transactions/export/",
+    {
+      params: removeEmptyParameters({
+        page: 1,
+        page_size: 1,
+        ...exportFilters,
+      }),
+      responseType: "blob",
+    },
+  );
+
+  return response.data;
+}
