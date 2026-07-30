@@ -43,4 +43,9 @@ urlpatterns = [
         "api/transactions/",
         include("apps.transactions.urls"),
     ),
+
+    path(
+        "api/dashboard/",
+        include("apps.dashboard.urls"),
+    ),
 ]

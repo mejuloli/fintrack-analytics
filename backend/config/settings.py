@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "apps.users.apps.UsersConfig",
     "apps.customers.apps.CustomersConfig",
     "apps.transactions.apps.TransactionsConfig",
+    "apps.dashboard.apps.DashboardConfig",
 ]
 
 
