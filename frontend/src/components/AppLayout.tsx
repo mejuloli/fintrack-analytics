@@ -5,6 +5,7 @@ import {
   MenuUnfoldOutlined,
   SafetyCertificateOutlined,
   SwapOutlined,
+  TeamOutlined,
 } from "@ant-design/icons";
 import {
   Avatar,
@@ -40,6 +41,11 @@ const menuItems = [
     key: "/transactions",
     icon: <SwapOutlined />,
     label: "Transações",
+  },
+  {
+    key: "/customers",
+    icon: <TeamOutlined />,
+    label: "Clientes",
   },
 ];
 
