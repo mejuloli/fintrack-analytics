@@ -24,7 +24,10 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 
 import {
   getTransactionOptions,
@@ -96,13 +99,27 @@ interface FilterFormValues {
 
 export default function TransactionsPage() {
   const navigate = useNavigate();
+
+  const [
+    searchParams,
+    setSearchParams,
+  ] = useSearchParams();
+
+  const initialCustomerFilter =
+    searchParams.get("customer")?.trim();
+
   const [form] = Form.useForm<FilterFormValues>();
   const { message } = AntApp.useApp();
 
   const [filters, setFilters] =
-    useState<TransactionFilters>(
-      DEFAULT_FILTERS,
-    );
+    useState<TransactionFilters>(() => ({
+      ...DEFAULT_FILTERS,
+      ...(initialCustomerFilter
+        ? {
+            customer: initialCustomerFilter,
+          }
+        : {}),
+    }));
 
   const [data, setData] = useState<
     PaginatedResponse<Transaction>
@@ -195,6 +212,13 @@ export default function TransactionsPage() {
 
   function handleClearFilters() {
     form.resetFields();
+
+    setSearchParams(
+      {},
+      {
+        replace: true,
+      },
+    );
 
     setFilters({
       ...DEFAULT_FILTERS,
@@ -328,6 +352,29 @@ export default function TransactionsPage() {
         Consulte e filtre as transações registradas na
         plataforma.
       </Paragraph>
+
+      {filters.customer ? (
+        <Alert
+          type="info"
+          showIcon
+          message="Filtro de cliente aplicado"
+          description={
+            `Exibindo somente as transações de `
+            + filters.customer
+          }
+          action={
+            <Button
+              size="small"
+              onClick={handleClearFilters}
+            >
+              Remover filtro
+            </Button>
+          }
+          style={{
+            marginBottom: 16,
+          }}
+        />
+      ) : null}
 
       <Card
         title={

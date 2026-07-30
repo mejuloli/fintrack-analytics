@@ -41,6 +41,7 @@ export interface TransactionFilters {
   page: number;
   page_size: number;
   search?: string;
+  customer?: string;
   status?: string;
   category?: string;
   channel?: string;
