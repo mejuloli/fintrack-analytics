@@ -346,7 +346,7 @@ export default function TransactionDetailsPage() {
       </Flex>
 
       <Space
-        direction="vertical"
+        orientation="vertical"
         size={16}
         style={{
           display: "flex",
