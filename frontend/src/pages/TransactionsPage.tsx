@@ -18,8 +18,9 @@ import type {
 } from "antd";
 import {
   ClearOutlined,
-  FilterOutlined,
+  DownloadOutlined,
   EyeOutlined,
+  FilterOutlined,
   ReloadOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
@@ -30,6 +31,7 @@ import {
 } from "react-router-dom";
 
 import {
+  exportTransactionsCsv,
   getTransactionOptions,
   getTransactions,
 } from "../services/transactions";
@@ -142,6 +144,10 @@ export default function TransactionsPage() {
     });
 
   const [loading, setLoading] = useState(true);
+
+  const [exporting, setExporting] =
+    useState(false);
+
   const [optionsLoading, setOptionsLoading] =
     useState(true);
   const [errorMessage, setErrorMessage] = useState<
@@ -223,6 +229,51 @@ export default function TransactionsPage() {
     setFilters({
       ...DEFAULT_FILTERS,
     });
+  }
+
+
+  async function handleExportCsv() {
+    setExporting(true);
+
+    try {
+      const csv = await exportTransactionsCsv(
+        filters,
+      );
+
+      const url = URL.createObjectURL(csv);
+      const link = document.createElement("a");
+
+      const currentDate = new Date();
+
+      const date = [
+        currentDate.getFullYear(),
+        String(
+          currentDate.getMonth() + 1,
+        ).padStart(2, "0"),
+        String(
+          currentDate.getDate(),
+        ).padStart(2, "0"),
+      ].join("-");
+
+      link.href = url;
+      link.download = `transacoes-${date}.csv`;
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      URL.revokeObjectURL(url);
+
+      void message.success(
+        "Arquivo CSV exportado com sucesso.",
+      );
+    } catch {
+      void message.error(
+        "Não foi possível exportar as transações.",
+      );
+    } finally {
+      setExporting(false);
+    }
   }
 
 
@@ -554,6 +605,17 @@ export default function TransactionsPage() {
               }}
             >
               Atualizar
+            </Button>
+
+            <Button
+              icon={<DownloadOutlined />}
+              loading={exporting}
+              disabled={loading}
+              onClick={() => {
+                void handleExportCsv();
+              }}
+            >
+              Exportar CSV
             </Button>
           </Space>
         </Form>
