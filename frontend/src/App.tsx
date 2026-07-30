@@ -29,6 +29,14 @@ const TransactionDetailsPage = lazy(
   () => import("./pages/TransactionDetailsPage"),
 );
 
+const CustomersPage = lazy(
+  () => import("./pages/CustomersPage"),
+);
+
+const CustomerDetailsPage = lazy(
+  () => import("./pages/CustomerDetailsPage"),
+);
+
 function PageLoader() {
   return (
     <Flex
@@ -68,6 +76,16 @@ function App() {
             <Route
               path="/transactions/:transactionId"
               element={<TransactionDetailsPage />}
+            />
+
+            <Route
+              path="/customers"
+              element={<CustomersPage />}
+            />
+
+            <Route
+              path="/customers/:customerId"
+              element={<CustomerDetailsPage />}
             />
           </Route>
         </Route>
