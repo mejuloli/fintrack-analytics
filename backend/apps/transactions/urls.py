@@ -2,6 +2,7 @@ from django.urls import path
 
 from apps.transactions.views import (
     TransactionDetailView,
+    TransactionExportView,
     TransactionListView,
     TransactionOptionsView,
 )
@@ -20,6 +21,11 @@ urlpatterns = [
         "options/",
         TransactionOptionsView.as_view(),
         name="transaction-options",
+    ),
+    path(
+        "export/",
+        TransactionExportView.as_view(),
+        name="transaction-export",
     ),
     path(
         "<int:pk>/",
