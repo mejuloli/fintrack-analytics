@@ -1,6 +1,10 @@
 import {
   ArrowLeftOutlined,
+  DatabaseOutlined,
+  FileTextOutlined,
   ReloadOutlined,
+  SwapOutlined,
+  TeamOutlined,
 } from "@ant-design/icons";
 import {
   Alert,
@@ -31,6 +35,8 @@ import {
   formatCurrency,
   formatDateTime,
 } from "../utils/formatters";
+
+import "./DetailsPage.css";
 
 
 const { Paragraph, Text, Title } = Typography;
@@ -129,32 +135,94 @@ export default function TransactionDetailsPage() {
 
   if (loading) {
     return (
-      <Card>
-        <Skeleton active paragraph={{ rows: 10 }} />
-      </Card>
+      <div className="details-page">
+        <Flex
+          className="details-page-header"
+          align="center"
+          justify="space-between"
+          gap={16}
+          wrap
+        >
+          <div className="details-page-header-copy">
+            <Title
+              className="details-page-title"
+              level={2}
+            >
+              Detalhes da transação
+            </Title>
+
+            <Paragraph
+              className="details-page-description"
+              type="secondary"
+            >
+              Consulte todas as informações registradas.
+            </Paragraph>
+          </div>
+
+          <Button
+            className="details-back-button"
+            icon={<ArrowLeftOutlined />}
+            onClick={() => {
+              goBack();
+            }}
+          >
+            Voltar
+          </Button>
+        </Flex>
+
+        <Card className="details-state-card">
+          <Skeleton active paragraph={{ rows: 10 }} />
+        </Card>
+      </div>
     );
   }
 
 
   if (errorMessage || !transaction) {
     return (
-      <>
-        <Button
-          icon={<ArrowLeftOutlined />}
-          onClick={() => {
-            goBack();
-          }}
-          style={{
-            marginBottom: 16,
-          }}
+      <div className="details-page">
+        <Flex
+          className="details-page-header"
+          align="center"
+          justify="space-between"
+          gap={16}
+          wrap
         >
-          Voltar
-        </Button>
+          <div className="details-page-header-copy">
+            <Title
+              className="details-page-title"
+              level={2}
+            >
+              Detalhes da transação
+            </Title>
+
+            <Paragraph
+              className="details-page-description"
+              type="secondary"
+            >
+              Consulte todas as informações registradas.
+            </Paragraph>
+          </div>
+
+          <Button
+            className="details-back-button"
+            icon={<ArrowLeftOutlined />}
+            onClick={() => {
+              goBack();
+            }}
+          >
+            Voltar
+          </Button>
+        </Flex>
 
         <Alert
+          className="details-alert"
           type="error"
           showIcon
-          message={errorMessage}
+          message={
+            errorMessage
+            ?? "Não foi possível carregar a transação."
+          }
           action={
             <Button
               size="small"
@@ -167,51 +235,12 @@ export default function TransactionDetailsPage() {
             </Button>
           }
         />
-      </>
+      </div>
     );
   }
 
 
   const generalItems: DescriptionsProps["items"] = [
-    {
-      key: "external_id",
-      label: "Identificador",
-      children: (
-        <Text code>
-          {transaction.external_id}
-        </Text>
-      ),
-    },
-    {
-      key: "amount",
-      label: "Valor",
-      children: (
-        <Text strong>
-          {formatCurrency(transaction.amount)}
-        </Text>
-      ),
-    },
-    {
-      key: "status",
-      label: "Status",
-      children: (
-        <Tag
-          color={
-            statusColors[transaction.status] ??
-            "default"
-          }
-        >
-          {transaction.status_label}
-        </Tag>
-      ),
-    },
-    {
-      key: "transaction_date",
-      label: "Data da transação",
-      children: formatDateTime(
-        transaction.transaction_date,
-      ),
-    },
     {
       key: "category",
       label: "Categoria",
@@ -232,7 +261,7 @@ export default function TransactionDetailsPage() {
       key: "description",
       label: "Descrição",
       children: transaction.description || "—",
-      span: 2,
+      span: 3,
     },
   ];
 
@@ -290,106 +319,168 @@ export default function TransactionDetailsPage() {
 
 
   return (
-    <>
+    <div className="details-page">
       <Flex
+        className="details-page-header"
         align="center"
         justify="space-between"
         gap={16}
         wrap
-        style={{
-          marginBottom: 24,
-        }}
       >
-        <Space align="start">
-          <Button
-            type="text"
-            aria-label="Voltar para transações"
-            icon={<ArrowLeftOutlined />}
-            onClick={() => {
-              goBack();
-            }}
-          />
-
-          <div>
-            <Title
-              level={2}
-              style={{
-                marginBottom: 4,
-              }}
-            >
-              Detalhes da transação
-            </Title>
-
-            <Paragraph
-              type="secondary"
-              style={{
-                marginBottom: 0,
-              }}
-            >
-              Consulte todas as informações registradas.
-            </Paragraph>
-          </div>
-        </Space>
-
-        <Space>
-          <Text code>
-            {transaction.external_id}
-          </Text>
-
-          <Tag
-            color={
-              statusColors[transaction.status] ??
-              "default"
-            }
+        <div className="details-page-header-copy">
+          <Title
+            className="details-page-title"
+            level={2}
           >
-            {transaction.status_label}
-          </Tag>
-        </Space>
+            Detalhes da transação
+          </Title>
+
+          <Paragraph
+            className="details-page-description"
+            type="secondary"
+          >
+            Consulte todas as informações registradas.
+          </Paragraph>
+        </div>
+
+        <Button
+          className="details-back-button"
+          icon={<ArrowLeftOutlined />}
+          onClick={() => {
+            goBack();
+          }}
+        >
+          Voltar
+        </Button>
       </Flex>
 
-      <Space
-        orientation="vertical"
-        size={16}
-        style={{
-          display: "flex",
-        }}
-      >
-        <Card title="Informações da transação">
-          <Descriptions
-            bordered
-            column={{
-              xs: 1,
-              md: 2,
-              xl: 3,
-            }}
-            items={generalItems}
-          />
-        </Card>
+      <Card className="details-hero-card">
+        <div className="details-hero">
+          <div className="details-hero-main">
+            <div className="details-hero-icon">
+              <SwapOutlined />
+            </div>
 
-        <Card title="Cliente e localização">
+            <div className="details-hero-copy">
+              <Text className="details-eyebrow">
+                Transação
+              </Text>
+
+              <Title
+                className="details-hero-title"
+                level={3}
+              >
+                {transaction.external_id}
+              </Title>
+
+              <Space
+                className="details-hero-meta"
+                wrap
+              >
+                <Tag
+                  color={
+                    statusColors[
+                      transaction.status
+                    ] ?? "default"
+                  }
+                >
+                  {transaction.status_label}
+                </Tag>
+
+                <Text type="secondary">
+                  {formatDateTime(
+                    transaction.transaction_date,
+                  )}
+                </Text>
+              </Space>
+            </div>
+          </div>
+
+          <div
+            className={
+              "details-hero-stat "
+              + "details-transaction-amount"
+            }
+          >
+            <Text type="secondary">
+              Valor da transação
+            </Text>
+
+            <Text
+              className="details-hero-stat-value"
+              strong
+            >
+              {formatCurrency(transaction.amount)}
+            </Text>
+          </div>
+        </div>
+      </Card>
+
+      <Card
+        className={
+          "details-section-card "
+          + "details-descriptions-card"
+        }
+        title={
+          <div className="details-section-title">
+            <FileTextOutlined />
+            <span>Informações da transação</span>
+          </div>
+        }
+      >
+        <Descriptions
+          className="details-descriptions"
+          bordered
+          column={{
+            xs: 1,
+            md: 2,
+            xl: 3,
+          }}
+          items={generalItems}
+        />
+      </Card>
+
+      <div className="details-secondary-grid">
+        <Card
+          className={
+            "details-section-card "
+            + "details-descriptions-card"
+          }
+          title={
+            <div className="details-section-title">
+              <TeamOutlined />
+              <span>Cliente e localização</span>
+            </div>
+          }
+        >
           <Descriptions
+            className="details-descriptions"
             bordered
-            column={{
-              xs: 1,
-              md: 2,
-              xl: 3,
-            }}
+            column={1}
             items={customerItems}
           />
         </Card>
 
-        <Card title="Informações do sistema">
+        <Card
+          className={
+            "details-section-card "
+            + "details-descriptions-card"
+          }
+          title={
+            <div className="details-section-title">
+              <DatabaseOutlined />
+              <span>Informações do sistema</span>
+            </div>
+          }
+        >
           <Descriptions
+            className="details-descriptions"
             bordered
-            column={{
-              xs: 1,
-              md: 2,
-              xl: 3,
-            }}
+            column={1}
             items={systemItems}
           />
         </Card>
-      </Space>
-    </>
+      </div>
+    </div>
   );
 }

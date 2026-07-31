@@ -57,6 +57,8 @@ import {
   formatDateTime,
 } from "../utils/formatters";
 
+import "./DetailsPage.css";
+
 
 const {
   Paragraph,
@@ -237,20 +239,6 @@ export default function CustomerDetailsPage() {
       customer
         ? [
             {
-              key: "external_id",
-              label: "Identificador",
-              children: (
-                <Text code>
-                  {customer.external_id}
-                </Text>
-              ),
-            },
-            {
-              key: "name",
-              label: "Nome",
-              children: customer.name,
-            },
-            {
               key: "email",
               label: "E-mail",
               children:
@@ -268,29 +256,6 @@ export default function CustomerDetailsPage() {
                   .filter(Boolean)
                   .join(" - ")
                 || "Não informada",
-            },
-            {
-              key: "status",
-              label: "Status",
-              children: (
-                <Tag
-                  color={
-                    customer.is_active
-                      ? "green"
-                      : "default"
-                  }
-                >
-                  {customer.is_active
-                    ? "Ativo"
-                    : "Inativo"}
-                </Tag>
-              ),
-            },
-            {
-              key: "transaction_count",
-              label: "Transações",
-              children:
-                customer.transaction_count,
             },
           ]
         : [],
@@ -434,31 +399,33 @@ export default function CustomerDetailsPage() {
 
 
   return (
-    <Space
-      orientation="vertical"
-      size="large"
-      style={{
-        width: "100%",
-      }}
-    >
+    <div className="details-page">
       <Flex
+        className="details-page-header"
         justify="space-between"
         align="center"
         gap={16}
         wrap
       >
-        <div>
-          <Title level={2}>
+        <div className="details-page-header-copy">
+          <Title
+            className="details-page-title"
+            level={2}
+          >
             Detalhes do cliente
           </Title>
 
-          <Paragraph type="secondary">
+          <Paragraph
+            className="details-page-description"
+            type="secondary"
+          >
             Consulte os dados cadastrais e o histórico
             de movimentações.
           </Paragraph>
         </div>
 
         <Button
+          className="details-back-button"
           icon={<ArrowLeftOutlined />}
           onClick={() => {
             goBack();
@@ -469,13 +436,14 @@ export default function CustomerDetailsPage() {
       </Flex>
 
       {loading ? (
-        <Card>
+        <Card className="details-state-card">
           <Skeleton active paragraph={{ rows: 8 }} />
         </Card>
       ) : null}
 
       {error ? (
         <Alert
+          className="details-alert"
           type="error"
           showIcon
           message="Erro ao carregar cliente"
@@ -496,32 +464,82 @@ export default function CustomerDetailsPage() {
 
       {customer ? (
         <>
-          <Card
-            title={
-              <Space>
-                <TeamOutlined />
-                {customer.name}
-              </Space>
-            }
-          >
+          <Card className="details-hero-card">
+            <div className="details-hero">
+              <div className="details-hero-main">
+                <div className="details-hero-icon">
+                  <TeamOutlined />
+                </div>
+
+                <div className="details-hero-copy">
+                  <Text className="details-eyebrow">
+                    Cliente
+                  </Text>
+
+                  <Title
+                    className="details-hero-title"
+                    level={3}
+                  >
+                    {customer.name}
+                  </Title>
+
+                  <Space
+                    className="details-hero-meta"
+                    wrap
+                  >
+                    <Text code>
+                      {customer.external_id}
+                    </Text>
+
+                    <Tag
+                      color={
+                        customer.is_active
+                          ? "green"
+                          : "default"
+                      }
+                    >
+                      {customer.is_active
+                        ? "Ativo"
+                        : "Inativo"}
+                    </Tag>
+                  </Space>
+                </div>
+              </div>
+
+              <div className="details-hero-stat">
+                <Text type="secondary">
+                  Transações registradas
+                </Text>
+
+                <Text
+                  className="details-hero-stat-value"
+                  strong
+                >
+                  {customer.transaction_count}
+                </Text>
+              </div>
+            </div>
+
             <Descriptions
+              className="details-descriptions"
               bordered
               column={{
                 xs: 1,
-                sm: 1,
                 md: 2,
-                lg: 3,
               }}
               items={customerItems}
             />
           </Card>
 
           <Card
+            className={
+              "details-section-card details-history-card"
+            }
             title={
-              <Space>
+              <div className="details-section-title">
                 <SwapOutlined />
-                Histórico de transações
-              </Space>
+                <span>Histórico de transações</span>
+              </div>
             }
             extra={
               <Button
@@ -545,6 +563,7 @@ export default function CustomerDetailsPage() {
           >
             {transactionsError ? (
               <Alert
+                className="details-history-alert"
                 type="error"
                 showIcon
                 message="Erro ao carregar histórico"
@@ -564,14 +583,13 @@ export default function CustomerDetailsPage() {
                     Tentar novamente
                   </Button>
                 }
-                style={{
-                  marginBottom: 16,
-                }}
               />
             ) : null}
 
             <Table<Transaction>
+              className="details-table"
               rowKey="id"
+              size="middle"
               loading={transactionsLoading}
               columns={transactionColumns}
               dataSource={transactions.results}
@@ -593,8 +611,11 @@ export default function CustomerDetailsPage() {
                   10,
                   20,
                 ],
-                showTotal: (total) =>
-                  `${total} transações`,
+                showTotal: (
+                  total,
+                  range,
+                ) =>
+                  `${range[0]}–${range[1]} de ${total}`,
               }}
               onChange={(pagination) => {
                 const nextPage =
@@ -620,8 +641,18 @@ export default function CustomerDetailsPage() {
             />
           </Card>
 
-          <Card title="Informações do sistema">
+          <Card
+            className={
+              "details-section-card details-system-card"
+            }
+            title={
+              <div className="details-section-title">
+                Informações do sistema
+              </div>
+            }
+          >
             <Descriptions
+              className="details-descriptions"
               bordered
               column={{
                 xs: 1,
@@ -632,6 +663,6 @@ export default function CustomerDetailsPage() {
           </Card>
         </>
       ) : null}
-    </Space>
+    </div>
   );
 }
