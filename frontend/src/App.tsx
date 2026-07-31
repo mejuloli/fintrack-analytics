@@ -13,6 +13,9 @@ import {
 } from "react-router-dom";
 
 import { AppLayout } from "./components/AppLayout";
+import {
+  ScrollToTopOnRouteChange,
+} from "./components/ScrollToTopOnRouteChange";
 import { LoginPage } from "./pages/LoginPage";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 
@@ -37,6 +40,7 @@ const CustomerDetailsPage = lazy(
   () => import("./pages/CustomerDetailsPage"),
 );
 
+
 function PageLoader() {
   return (
     <Flex
@@ -54,63 +58,67 @@ function PageLoader() {
 
 function App() {
   return (
-    <Suspense fallback={<PageLoader />}>
-      <Routes>
-        <Route
-          path="/login"
-          element={<LoginPage />}
-        />
+    <>
+      <ScrollToTopOnRouteChange />
 
-        <Route element={<ProtectedRoute />}>
-          <Route element={<AppLayout />}>
-            <Route
-              path="/dashboard"
-              element={<DashboardPage />}
-            />
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route
+            path="/login"
+            element={<LoginPage />}
+          />
 
-            <Route
-              path="/transactions"
-              element={<TransactionsPage />}
-            />
+          <Route element={<ProtectedRoute />}>
+            <Route element={<AppLayout />}>
+              <Route
+                path="/dashboard"
+                element={<DashboardPage />}
+              />
 
-            <Route
-              path="/transactions/:transactionId"
-              element={<TransactionDetailsPage />}
-            />
+              <Route
+                path="/transactions"
+                element={<TransactionsPage />}
+              />
 
-            <Route
-              path="/customers"
-              element={<CustomersPage />}
-            />
+              <Route
+                path="/transactions/:transactionId"
+                element={<TransactionDetailsPage />}
+              />
 
-            <Route
-              path="/customers/:customerId"
-              element={<CustomerDetailsPage />}
-            />
+              <Route
+                path="/customers"
+                element={<CustomersPage />}
+              />
+
+              <Route
+                path="/customers/:customerId"
+                element={<CustomerDetailsPage />}
+              />
+            </Route>
           </Route>
-        </Route>
 
-        <Route
-          path="/"
-          element={
-            <Navigate
-              to="/dashboard"
-              replace
-            />
-          }
-        />
+          <Route
+            path="/"
+            element={
+              <Navigate
+                to="/dashboard"
+                replace
+              />
+            }
+          />
 
-        <Route
-          path="*"
-          element={
-            <Navigate
-              to="/dashboard"
-              replace
-            />
-          }
-        />
-      </Routes>
-    </Suspense>
+          <Route
+            path="*"
+            element={
+              <Navigate
+                to="/dashboard"
+                replace
+              />
+            }
+          />
+        </Routes>
+      </Suspense>
+    </>
   );
 }
 

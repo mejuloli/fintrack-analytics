@@ -21,10 +21,10 @@ import {
   useState,
 } from "react";
 import {
-  useNavigate,
   useParams,
 } from "react-router-dom";
 
+import { useSmartBack } from "../hooks/useSmartBack";
 import { getTransaction } from "../services/transactions";
 import type { Transaction } from "../types/transaction";
 import {
@@ -45,7 +45,9 @@ const statusColors: Record<string, string> = {
 
 
 export default function TransactionDetailsPage() {
-  const navigate = useNavigate();
+  const goBack = useSmartBack(
+    "/transactions",
+  );
 
   const {
     transactionId: transactionIdParameter,
@@ -114,7 +116,7 @@ export default function TransactionDetailsPage() {
           <Button
             type="primary"
             onClick={() => {
-              navigate("/transactions");
+              goBack();
             }}
           >
             Voltar para transações
@@ -140,7 +142,7 @@ export default function TransactionDetailsPage() {
         <Button
           icon={<ArrowLeftOutlined />}
           onClick={() => {
-            navigate("/transactions");
+            goBack();
           }}
           style={{
             marginBottom: 16,
@@ -304,7 +306,7 @@ export default function TransactionDetailsPage() {
             aria-label="Voltar para transações"
             icon={<ArrowLeftOutlined />}
             onClick={() => {
-              navigate("/transactions");
+              goBack();
             }}
           />
 

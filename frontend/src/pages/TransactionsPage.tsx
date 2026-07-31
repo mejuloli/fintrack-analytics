@@ -8,6 +8,7 @@ import {
   Input,
   Row,
   Select,
+  Skeleton,
   Space,
   Table,
   Tag,
@@ -17,6 +18,7 @@ import type {
   TableColumnsType,
 } from "antd";
 import {
+  ArrowLeftOutlined,
   ClearOutlined,
   DownloadOutlined,
   EyeOutlined,
@@ -24,12 +26,23 @@ import {
   ReloadOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import { useCallback, useEffect, useState } from "react";
 import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import {
+  useLocation,
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
 
+import {
+  savePageScrollPosition,
+  usePageScrollRestoration,
+} from "../hooks/usePageScrollRestoration";
+import { useSmartBack } from "../hooks/useSmartBack";
 import {
   exportTransactionsCsv,
   getTransactionOptions,
@@ -55,6 +68,163 @@ const DEFAULT_FILTERS: TransactionFilters = {
   page_size: 10,
   ordering: "-transaction_date",
 };
+
+
+function parsePositiveInteger(
+  value: string | null,
+  fallback: number,
+) {
+  const parsedValue = Number(value);
+
+  return (
+    Number.isInteger(parsedValue)
+    && parsedValue > 0
+  )
+    ? parsedValue
+    : fallback;
+}
+
+
+function getOptionalParameter(
+  searchParams: URLSearchParams,
+  name: string,
+) {
+  const value =
+    searchParams.get(name)?.trim();
+
+  return value || undefined;
+}
+
+
+function getInitialTransactionFilters(
+  searchParams: URLSearchParams,
+): TransactionFilters {
+  return {
+    page: parsePositiveInteger(
+      searchParams.get("page"),
+      DEFAULT_FILTERS.page,
+    ),
+    page_size: parsePositiveInteger(
+      searchParams.get("page_size"),
+      DEFAULT_FILTERS.page_size,
+    ),
+    search: getOptionalParameter(
+      searchParams,
+      "search",
+    ),
+    customer: getOptionalParameter(
+      searchParams,
+      "customer",
+    ),
+    status: getOptionalParameter(
+      searchParams,
+      "status",
+    ),
+    category: getOptionalParameter(
+      searchParams,
+      "category",
+    ),
+    channel: getOptionalParameter(
+      searchParams,
+      "channel",
+    ),
+    transaction_type: getOptionalParameter(
+      searchParams,
+      "transaction_type",
+    ),
+    state: getOptionalParameter(
+      searchParams,
+      "state",
+    ),
+    start_date: getOptionalParameter(
+      searchParams,
+      "start_date",
+    ),
+    end_date: getOptionalParameter(
+      searchParams,
+      "end_date",
+    ),
+    min_amount: getOptionalParameter(
+      searchParams,
+      "min_amount",
+    ),
+    max_amount: getOptionalParameter(
+      searchParams,
+      "max_amount",
+    ),
+    ordering:
+      getOptionalParameter(
+        searchParams,
+        "ordering",
+      )
+      ?? DEFAULT_FILTERS.ordering,
+  };
+}
+
+
+function createTransactionSearchParams(
+  filters: TransactionFilters,
+) {
+  const searchParams =
+    new URLSearchParams();
+
+  if (
+    filters.page
+    !== DEFAULT_FILTERS.page
+  ) {
+    searchParams.set(
+      "page",
+      String(filters.page),
+    );
+  }
+
+  if (
+    filters.page_size
+    !== DEFAULT_FILTERS.page_size
+  ) {
+    searchParams.set(
+      "page_size",
+      String(filters.page_size),
+    );
+  }
+
+  const optionalParameters = {
+    search: filters.search,
+    customer: filters.customer,
+    status: filters.status,
+    category: filters.category,
+    channel: filters.channel,
+    transaction_type:
+      filters.transaction_type,
+    state: filters.state,
+    start_date: filters.start_date,
+    end_date: filters.end_date,
+    min_amount: filters.min_amount,
+    max_amount: filters.max_amount,
+  };
+
+  for (
+    const [name, value]
+    of Object.entries(optionalParameters)
+  ) {
+    if (value) {
+      searchParams.set(name, value);
+    }
+  }
+
+  if (
+    filters.ordering
+    && filters.ordering
+      !== DEFAULT_FILTERS.ordering
+  ) {
+    searchParams.set(
+      "ordering",
+      filters.ordering,
+    );
+  }
+
+  return searchParams;
+}
 
 
 const statusColors: Record<string, string> = {
@@ -101,27 +271,31 @@ interface FilterFormValues {
 
 export default function TransactionsPage() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [
     searchParams,
     setSearchParams,
   ] = useSearchParams();
 
-  const initialCustomerFilter =
-    searchParams.get("customer")?.trim();
+  const currentPath =
+    `${location.pathname}${location.search}`;
 
-  const [form] = Form.useForm<FilterFormValues>();
+  const goBack = useSmartBack(
+    "/customers",
+  );
+
+  const [form] =
+    Form.useForm<FilterFormValues>();
+
   const { message } = AntApp.useApp();
 
   const [filters, setFilters] =
-    useState<TransactionFilters>(() => ({
-      ...DEFAULT_FILTERS,
-      ...(initialCustomerFilter
-        ? {
-            customer: initialCustomerFilter,
-          }
-        : {}),
-    }));
+    useState<TransactionFilters>(() =>
+      getInitialTransactionFilters(
+        searchParams,
+      )
+    );
 
   const [data, setData] = useState<
     PaginatedResponse<Transaction>
@@ -153,6 +327,61 @@ export default function TransactionsPage() {
   const [errorMessage, setErrorMessage] = useState<
     string | null
   >(null);
+
+
+  const tableSectionRef =
+    useRef<HTMLDivElement | null>(null);
+
+
+  usePageScrollRestoration(
+    currentPath,
+    !loading,
+  );
+
+
+  useEffect(() => {
+    const nextSearchParams =
+      createTransactionSearchParams(
+        filters,
+      );
+
+    if (
+      nextSearchParams.toString()
+      === searchParams.toString()
+    ) {
+      return;
+    }
+
+    setSearchParams(
+      nextSearchParams,
+      {
+        replace: true,
+      },
+    );
+  }, [
+    filters,
+    searchParams,
+    setSearchParams,
+  ]);
+
+
+  useEffect(() => {
+    form.setFieldsValue({
+      search: filters.search,
+      status: filters.status,
+      category: filters.category,
+      channel: filters.channel,
+      state: filters.state,
+      start_date: filters.start_date,
+      end_date: filters.end_date,
+      min_amount: filters.min_amount,
+      max_amount: filters.max_amount,
+      ordering: filters.ordering,
+    });
+  }, [
+    filters,
+    form,
+  ]);
 
 
   const loadTransactions = useCallback(
@@ -219,13 +448,6 @@ export default function TransactionsPage() {
   function handleClearFilters() {
     form.resetFields();
 
-    setSearchParams(
-      {},
-      {
-        replace: true,
-      },
-    );
-
     setFilters({
       ...DEFAULT_FILTERS,
     });
@@ -274,6 +496,16 @@ export default function TransactionsPage() {
     } finally {
       setExporting(false);
     }
+  }
+
+  function scrollToTableStart() {
+    window.requestAnimationFrame(() => {
+      tableSectionRef.current
+        ?.scrollIntoView({
+          behavior: "auto",
+          block: "start",
+        });
+    });
   }
 
 
@@ -376,6 +608,10 @@ export default function TransactionsPage() {
           type="link"
           icon={<EyeOutlined />}
           onClick={() => {
+            savePageScrollPosition(
+              currentPath,
+            );
+
             navigate(
               `/transactions/${transaction.id}`,
             );
@@ -390,19 +626,44 @@ export default function TransactionsPage() {
 
   return (
     <>
-      <Title
-        level={2}
+      <Space
+        align="start"
         style={{
-          marginBottom: 4,
+          marginBottom: 16,
         }}
       >
-        Transações
-      </Title>
+        {filters.customer ? (
+          <Button
+            type="text"
+            aria-label="Voltar para o cliente"
+            icon={<ArrowLeftOutlined />}
+            onClick={() => {
+              goBack();
+            }}
+          />
+        ) : null}
 
-      <Paragraph type="secondary">
-        Consulte e filtre as transações registradas na
-        plataforma.
-      </Paragraph>
+        <div>
+          <Title
+            level={2}
+            style={{
+              marginBottom: 4,
+            }}
+          >
+            Transações
+          </Title>
+
+          <Paragraph
+            type="secondary"
+            style={{
+              marginBottom: 0,
+            }}
+          >
+            Consulte e filtre as transações registradas
+            na plataforma.
+          </Paragraph>
+        </div>
+      </Space>
 
       {filters.customer ? (
         <Alert
@@ -642,36 +903,66 @@ export default function TransactionsPage() {
         />
       )}
 
-      <Card>
-        <Table<Transaction>
-          rowKey="id"
-          loading={loading}
-          columns={columns}
-          dataSource={data.results}
-          scroll={{
-            x: 1410,
+      {loading && data.results.length === 0 ? (
+        <Card>
+          <Skeleton
+            active
+            title={false}
+            paragraph={{
+              rows: 7,
+            }}
+          />
+        </Card>
+      ) : (
+        <div
+          ref={tableSectionRef}
+          style={{
+            scrollMarginTop: 88,
           }}
-          pagination={{
-            current: data.page,
-            pageSize: data.page_size,
-            total: data.count,
-            showSizeChanger: true,
-            pageSizeOptions: [10, 20, 50, 100],
-            showTotal: (total) =>
-              `${total} transações`,
-            onChange: (page, pageSize) => {
-              setFilters((current) => ({
-                ...current,
-                page,
-                page_size: pageSize,
-              }));
-            },
-          }}
-          locale={{
-            emptyText: "Nenhuma transação encontrada.",
-          }}
-        />
-      </Card>
+        >
+          <Card>
+            <Table<Transaction>
+              rowKey="id"
+              loading={loading}
+              columns={columns}
+              dataSource={data.results}
+              scroll={{
+                x: 1410,
+              }}
+              pagination={{
+                current: data.page,
+                pageSize: data.page_size,
+                total: data.count,
+                showSizeChanger: true,
+                pageSizeOptions: [
+                  10,
+                  20,
+                  50,
+                  100,
+                ],
+                showTotal: (total) =>
+                  `${total} transações`,
+                onChange: (
+                  page,
+                  pageSize,
+                ) => {
+                  setFilters((current) => ({
+                    ...current,
+                    page,
+                    page_size: pageSize,
+                  }));
+
+                  scrollToTableStart();
+                },
+              }}
+              locale={{
+                emptyText:
+                  "Nenhuma transação encontrada.",
+              }}
+            />
+          </Card>
+        </div>
+      )}
     </>
   );
 }
