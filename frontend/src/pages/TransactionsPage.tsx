@@ -677,9 +677,6 @@ export default function TransactionsPage() {
               Remover filtro
             </Button>
           }
-          style={{
-            marginBottom: 16,
-          }}
         />
       ) : null}
 
@@ -894,9 +891,6 @@ export default function TransactionsPage() {
               Tentar novamente
             </Button>
           }
-          style={{
-            marginBottom: 16,
-          }}
         />
       )}
 

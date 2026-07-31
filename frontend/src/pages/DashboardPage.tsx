@@ -825,7 +825,13 @@ export default function DashboardPage() {
             )}
           >
             <div className="dashboard-chart-scroll">
-              <div className="dashboard-chart">
+              <div
+                className="dashboard-chart"
+                role="list"
+                aria-label={getChartTitle(
+                  analytics.period.days,
+                )}
+              >
                 {chartItems.map((item) => {
                   const height =
                     item.amount > 0
@@ -845,18 +851,22 @@ export default function DashboardPage() {
                       ? "transação"
                       : "transações";
 
+                  const chartItemDescription =
+                    `${item.description}: `
+                    + `${formatMoney(
+                      String(item.amount),
+                    )} em `
+                    + `${item.count} `
+                    + transactionLabel;
+
                   return (
                     <div
                       className="dashboard-chart-item"
                       key={item.key}
-                      title={
-                        `${item.description}: `
-                        + `${formatMoney(
-                          String(item.amount),
-                        )} em `
-                        + `${item.count} `
-                        + transactionLabel
-                      }
+                      role="listitem"
+                      tabIndex={0}
+                      title={chartItemDescription}
+                      aria-label={chartItemDescription}
                     >
                       <span
                         className={
