@@ -1,6 +1,8 @@
 import {
+  BankOutlined,
+  CalendarOutlined,
+  CalculatorOutlined,
   CheckCircleOutlined,
-  DollarOutlined,
   ReloadOutlined,
   RiseOutlined,
   SwapOutlined,
@@ -404,11 +406,21 @@ export default function DashboardPage() {
         wrap
       >
         <div className="dashboard-header-copy">
-          <Title level={2}>
+          <Text className="dashboard-eyebrow">
+            Visão geral
+          </Text>
+
+          <Title
+            className="dashboard-title"
+            level={2}
+          >
             Olá, {user?.name}
           </Title>
 
-          <Paragraph type="secondary">
+          <Paragraph
+            className="dashboard-description"
+            type="secondary"
+          >
             Acompanhe os principais indicadores das
             transações financeiras.
           </Paragraph>
@@ -419,15 +431,15 @@ export default function DashboardPage() {
           wrap
         >
           <Select
+            className="dashboard-period-select"
             value={days}
             options={PERIOD_OPTIONS}
+            aria-label="Período analisado"
             onChange={setDays}
-            style={{
-              width: 180,
-            }}
           />
 
           <Button
+            className="dashboard-refresh-button"
             icon={<ReloadOutlined />}
             loading={loading}
             onClick={() => {
@@ -441,6 +453,7 @@ export default function DashboardPage() {
 
       {error && (
         <Alert
+          className="dashboard-alert"
           type="error"
           showIcon
           message="Erro ao carregar dashboard"
@@ -459,13 +472,13 @@ export default function DashboardPage() {
       )}
 
       {loading && !analytics ? (
-        <Card>
+        <Card className="dashboard-state-card">
           <Skeleton active paragraph={{ rows: 8 }} />
         </Card>
       ) : null}
 
       {!loading && !analytics ? (
-        <Card>
+        <Card className="dashboard-state-card">
           <Empty
             description="Nenhum dado disponível."
           />
@@ -474,26 +487,48 @@ export default function DashboardPage() {
 
       {analytics ? (
         <>
-          <Text type="secondary">
-            Período de{" "}
-            {formatFullDate(
-              analytics.period.start_date,
-            )}{" "}
-            até{" "}
-            {formatFullDate(
-              analytics.period.end_date,
-            )}
-          </Text>
+          <div className="dashboard-period-summary">
+            <CalendarOutlined />
 
-          <Row gutter={[16, 16]}>
+            <Text type="secondary">
+              Período analisado:{" "}
+              <Text strong>
+                {formatFullDate(
+                  analytics.period.start_date,
+                )}
+              </Text>{" "}
+              até{" "}
+              <Text strong>
+                {formatFullDate(
+                  analytics.period.end_date,
+                )}
+              </Text>
+            </Text>
+          </div>
+
+          <Row
+            className="dashboard-metrics-grid"
+            gutter={[16, 16]}
+          >
             <Col xs={24} sm={12} xl={8}>
-              <Card>
+              <Card className="dashboard-metric-card">
+
                 <Statistic
-                  title="Clientes cadastrados"
+                  title={
+                    <div className="dashboard-metric-header">
+                      <span>Clientes cadastrados</span>
+
+                      <span
+                        className="dashboard-metric-header-icon"
+                        aria-hidden="true"
+                      >
+                        <TeamOutlined />
+                      </span>
+                    </div>
+                  }
                   value={
                     analytics.summary.total_customers
                   }
-                  prefix={<TeamOutlined />}
                   suffix={
                     <Text type="secondary">
                       /{" "}
@@ -509,81 +544,138 @@ export default function DashboardPage() {
             </Col>
 
             <Col xs={24} sm={12} xl={8}>
-              <Card>
+              <Card className="dashboard-metric-card">
+
                 <Statistic
-                  title="Clientes movimentando"
+                  title={
+                    <div className="dashboard-metric-header">
+                      <span>Clientes movimentando</span>
+
+                      <span
+                        className="dashboard-metric-header-icon"
+                        aria-hidden="true"
+                      >
+                        <RiseOutlined />
+                      </span>
+                    </div>
+                  }
                   value={
                     analytics.summary
                       .customers_with_transactions
                   }
-                  prefix={<RiseOutlined />}
                 />
               </Card>
             </Col>
 
             <Col xs={24} sm={12} xl={8}>
-              <Card>
+              <Card className="dashboard-metric-card">
+
                 <Statistic
-                  title="Transações no período"
+                  title={
+                    <div className="dashboard-metric-header">
+                      <span>Transações no período</span>
+
+                      <span
+                        className="dashboard-metric-header-icon"
+                        aria-hidden="true"
+                      >
+                        <SwapOutlined />
+                      </span>
+                    </div>
+                  }
                   value={
                     analytics.summary
                       .total_transactions
                   }
-                  prefix={<SwapOutlined />}
                 />
               </Card>
             </Col>
 
             <Col xs={24} sm={12} xl={8}>
-              <Card>
+              <Card className="dashboard-metric-card">
+
                 <Statistic
-                  title="Volume movimentado"
+                  title={
+                    <div className="dashboard-metric-header">
+                      <span>Volume movimentado</span>
+
+                      <span
+                        className="dashboard-metric-header-icon"
+                        aria-hidden="true"
+                      >
+                        <BankOutlined />
+                      </span>
+                    </div>
+                  }
                   value={formatMoney(
                     analytics.summary.total_amount,
                   )}
-                  prefix={<DollarOutlined />}
                 />
               </Card>
             </Col>
 
             <Col xs={24} sm={12} xl={8}>
-              <Card>
+              <Card className="dashboard-metric-card">
+
                 <Statistic
-                  title="Ticket médio"
+                  title={
+                    <div className="dashboard-metric-header">
+                      <span>Ticket médio</span>
+
+                      <span
+                        className="dashboard-metric-header-icon"
+                        aria-hidden="true"
+                      >
+                        <CalculatorOutlined />
+                      </span>
+                    </div>
+                  }
                   value={formatMoney(
                     analytics.summary.average_ticket,
                   )}
-                  prefix={<DollarOutlined />}
                 />
               </Card>
             </Col>
 
             <Col xs={24} sm={12} xl={8}>
-              <Card>
+              <Card className="dashboard-metric-card">
+
                 <Statistic
-                  title="Taxa de aprovação"
+                  title={
+                    <div className="dashboard-metric-header">
+                      <span>Taxa de aprovação</span>
+
+                      <span
+                        className="dashboard-metric-header-icon"
+                        aria-hidden="true"
+                      >
+                        <CheckCircleOutlined />
+                      </span>
+                    </div>
+                  }
                   value={
                     analytics.summary.approval_rate
                   }
                   precision={2}
                   suffix="%"
-                  prefix={
-                    <CheckCircleOutlined />
-                  }
                 />
               </Card>
             </Col>
           </Row>
 
-          <Row gutter={[16, 16]}>
+          <Row
+            className="dashboard-analysis-grid"
+            gutter={[16, 16]}
+          >
             <Col xs={24} xl={12}>
-              <Card title="Transações por status">
+              <Card
+                className="dashboard-panel-card"
+                title="Transações por status"
+              >
                 <Space
+                  className="dashboard-distribution-list"
                   orientation="vertical"
-                  size="large"
-                  style={{
-                    width: "100%",
-                  }}
+                  size="middle"
                 >
                   {analytics.by_status.map(
                     (item) => {
@@ -661,13 +753,14 @@ export default function DashboardPage() {
             </Col>
 
             <Col xs={24} xl={12}>
-              <Card title="Volume por categoria">
+              <Card
+                className="dashboard-panel-card"
+                title="Volume por categoria"
+              >
                 <Space
+                  className="dashboard-distribution-list"
                   orientation="vertical"
-                  size="large"
-                  style={{
-                    width: "100%",
-                  }}
+                  size="middle"
                 >
                   {analytics.by_category.map(
                     (item) => {
@@ -724,12 +817,21 @@ export default function DashboardPage() {
           </Row>
 
           <Card
+            className={
+              "dashboard-panel-card dashboard-chart-card"
+            }
             title={getChartTitle(
               analytics.period.days,
             )}
           >
             <div className="dashboard-chart-scroll">
-              <div className="dashboard-chart">
+              <div
+                className="dashboard-chart"
+                role="list"
+                aria-label={getChartTitle(
+                  analytics.period.days,
+                )}
+              >
                 {chartItems.map((item) => {
                   const height =
                     item.amount > 0
@@ -749,18 +851,22 @@ export default function DashboardPage() {
                       ? "transação"
                       : "transações";
 
+                  const chartItemDescription =
+                    `${item.description}: `
+                    + `${formatMoney(
+                      String(item.amount),
+                    )} em `
+                    + `${item.count} `
+                    + transactionLabel;
+
                   return (
                     <div
                       className="dashboard-chart-item"
                       key={item.key}
-                      title={
-                        `${item.description}: `
-                        + `${formatMoney(
-                          String(item.amount),
-                        )} em `
-                        + `${item.count} `
-                        + transactionLabel
-                      }
+                      role="listitem"
+                      tabIndex={0}
+                      title={chartItemDescription}
+                      aria-label={chartItemDescription}
                     >
                       <span
                         className={
