@@ -29,10 +29,16 @@ import {
   useState,
 } from "react";
 import {
+  useLocation,
   useNavigate,
   useParams,
 } from "react-router-dom";
 
+import {
+  savePageScrollPosition,
+  usePageScrollRestoration,
+} from "../hooks/usePageScrollRestoration";
+import { useSmartBack } from "../hooks/useSmartBack";
 import { getCustomer } from "../services/customers";
 import {
   getTransactions,
@@ -81,7 +87,16 @@ const EMPTY_TRANSACTIONS:
 
 export default function CustomerDetailsPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const goBack = useSmartBack(
+    "/customers",
+  );
+
   const { customerId } = useParams();
+
+  const currentPath =
+    `${location.pathname}${location.search}`;
 
   const parsedCustomerId = Number(customerId);
 
@@ -207,6 +222,12 @@ export default function CustomerDetailsPage() {
     transactionPage,
     transactionPageSize,
   ]);
+
+
+  usePageScrollRestoration(
+    currentPath,
+    !loading && !transactionsLoading,
+  );
 
 
   const customerItems = useMemo<
@@ -368,6 +389,10 @@ export default function CustomerDetailsPage() {
             type="link"
             icon={<EyeOutlined />}
             onClick={() => {
+              savePageScrollPosition(
+                currentPath,
+              );
+
               navigate(
                 `/transactions/${transaction.id}`,
               );
@@ -378,7 +403,10 @@ export default function CustomerDetailsPage() {
         ),
       },
     ],
-    [navigate],
+    [
+      currentPath,
+      navigate,
+    ],
   );
 
 
@@ -394,7 +422,7 @@ export default function CustomerDetailsPage() {
           <Button
             type="primary"
             onClick={() => {
-              navigate("/customers");
+              goBack();
             }}
           >
             Voltar para clientes
@@ -433,7 +461,7 @@ export default function CustomerDetailsPage() {
         <Button
           icon={<ArrowLeftOutlined />}
           onClick={() => {
-            navigate("/customers");
+            goBack();
           }}
         >
           Voltar
@@ -499,6 +527,10 @@ export default function CustomerDetailsPage() {
               <Button
                 type="link"
                 onClick={() => {
+                  savePageScrollPosition(
+                    currentPath,
+                  );
+
                   navigate(
                     "/transactions?customer="
                     + encodeURIComponent(

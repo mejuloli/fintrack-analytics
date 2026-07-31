@@ -23,28 +23,33 @@
   max-width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
-  padding-bottom: 8px;
+  padding-bottom: 10px;
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .dashboard-chart {
   display: flex;
   align-items: flex-end;
   gap: 8px;
+
   width: 100%;
-  min-width: 100%;
+  min-width: max-content;
   height: 230px;
+
   padding: 16px 4px 0;
-  border-bottom: 1px solid
-    rgba(5, 5, 5, 0.12);
+  border-bottom:
+    1px solid rgba(5, 5, 5, 0.12);
 }
 
 .dashboard-chart-item {
   display: flex;
-  flex: 1 1 0;
+  flex: 1 0 42px;
   flex-direction: column;
   align-items: center;
   justify-content: flex-end;
-  min-width: 0;
+
+  min-width: 42px;
   height: 100%;
 }
 
@@ -61,7 +66,7 @@
   min-height: 2px;
   border-radius: 5px 5px 0 0;
   background:
-    var(--ant-color-primary, #1677ff);
+    var(--ant-color-primary, #2563eb);
   transition: height 200ms ease;
 }
 
@@ -69,7 +74,9 @@
   width: 100%;
   min-height: 18px;
   margin-top: 8px;
+  padding-inline: 2px;
   overflow: hidden;
+
   font-size: 11px;
   color: rgba(0, 0, 0, 0.65);
   text-align: center;
@@ -82,27 +89,29 @@
 }
 
 .dashboard-distribution-header {
+  display: grid !important;
+  grid-template-columns:
+    minmax(0, 1fr) max-content;
+  align-items: start !important;
   gap: 12px;
 }
 
-.dashboard-distribution-description {
-  text-align: right;
+.dashboard-distribution-header > * {
+  min-width: 0;
 }
 
-@media (max-width: 767px) {
-  .dashboard-chart {
-    width: max-content;
-    min-width: 100%;
-  }
-
-  .dashboard-chart-item {
-    flex: 0 0 38px;
-  }
+.dashboard-distribution-description {
+  white-space: nowrap;
+  text-align: right;
 }
 
 @media (max-width: 575px) {
   .dashboard-header {
     align-items: stretch;
+  }
+
+  .dashboard-header-copy {
+    min-width: 0;
   }
 
   .dashboard-header-actions {
@@ -111,5 +120,14 @@
 
   .dashboard-header-actions .ant-select {
     flex: 1;
+  }
+
+  .dashboard-chart {
+    height: 210px;
+  }
+
+  .dashboard-chart-item {
+    flex-basis: 46px;
+    min-width: 46px;
   }
 }

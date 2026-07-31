@@ -1,0 +1,227 @@
+.list-page {
+  display: grid;
+  gap: 20px;
+  width: 100%;
+  min-width: 0;
+}
+
+.list-page-header {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
+.list-page-title {
+  margin-top: 0 !important;
+  margin-bottom: 4px !important;
+}
+
+.list-page-description {
+  margin-bottom: 0 !important;
+}
+
+.list-page-alert {
+  margin-bottom: 0 !important;
+}
+
+.list-page-filters-card,
+.list-page-loading-card,
+.list-page-table-card {
+  width: 100%;
+  min-width: 0;
+}
+
+.list-page-filters-card {
+  margin-bottom: 0 !important;
+}
+
+.list-page-filters-card
+  .ant-form-item {
+  margin-bottom: 18px;
+}
+
+.list-page-actions {
+  display: flex;
+  width: 100%;
+}
+
+.list-page-filter-grid {
+  display: grid;
+  grid-template-columns:
+    minmax(260px, 2fr)
+    minmax(110px, 0.6fr)
+    minmax(170px, 0.9fr)
+    minmax(220px, 1fr);
+  gap: 0 16px;
+  width: 100%;
+  min-width: 0;
+}
+
+.list-page-filter-grid
+  > .ant-form-item {
+  min-width: 0;
+}
+
+.list-page-table-section {
+  width: 100%;
+  min-width: 0;
+  scroll-margin-top: 88px;
+}
+
+.list-page-table-card {
+  overflow: hidden;
+}
+
+.list-page-table-card
+  > .ant-card-head {
+  min-height: 64px;
+}
+
+.list-page-table-card
+  > .ant-card-head
+  .ant-card-head-title {
+  min-width: 0;
+}
+
+.list-page-table-card
+  > .ant-card-body {
+  padding: 0;
+}
+
+.list-page-results-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+}
+
+.list-page-results-title {
+  flex-shrink: 0;
+  font-size: 16px;
+}
+
+.list-page-results-count {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 400;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.list-page-table {
+  width: 100%;
+  min-width: 0;
+}
+
+.list-page-table
+  .ant-table-container {
+  border-start-start-radius: 0;
+  border-start-end-radius: 0;
+}
+
+.list-page-table
+  .ant-table-thead
+  > tr
+  > th {
+  background: #f8fafc;
+  white-space: nowrap;
+}
+
+.list-page-table
+  .ant-table-tbody
+  > tr
+  > td {
+  vertical-align: middle;
+}
+
+.list-page-table
+  .ant-table-pagination {
+  margin: 20px 24px !important;
+}
+
+@media (
+  min-width: 768px
+) and (
+  max-width: 1199px
+) {
+  .list-page-filter-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .list-page {
+    gap: 16px;
+  }
+
+  .list-page-filter-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .list-page-filters-card
+    > .ant-card-head {
+    padding-inline: 16px;
+  }
+
+  .list-page-filters-card
+    > .ant-card-body {
+    padding: 18px 16px;
+  }
+
+  .list-page-actions {
+    display: grid !important;
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+    gap: 10px !important;
+  }
+
+  .list-page-actions
+    .ant-space-item {
+    min-width: 0;
+  }
+
+  .list-page-actions
+    .ant-btn {
+    width: 100%;
+  }
+
+  .list-page-table-card
+    > .ant-card-head {
+    padding-inline: 16px;
+  }
+
+  .list-page-results-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .list-page-results-count {
+    max-width: 100%;
+  }
+
+  .list-page-table
+    .ant-table-pagination {
+    justify-content: center;
+    gap: 8px;
+    margin: 18px 12px !important;
+  }
+
+  .list-page-table
+    .ant-pagination-total-text {
+    width: 100%;
+    height: auto;
+    margin-inline-end: 0 !important;
+    text-align: center;
+  }
+}
+
+@media (max-width: 419px) {
+  .list-page-actions {
+    grid-template-columns: 1fr;
+  }
+}

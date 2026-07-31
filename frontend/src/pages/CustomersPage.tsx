@@ -1,5 +1,6 @@
 import {
   EyeOutlined,
+  FilterOutlined,
   ReloadOutlined,
   SearchOutlined,
   TeamOutlined,
@@ -8,7 +9,6 @@ import {
   App as AntApp,
   Button,
   Card,
-  Flex,
   Form,
   Input,
   Select,
@@ -33,6 +33,8 @@ import type {
   Customer,
   GetCustomersParams,
 } from "../types/customer";
+
+import "./ListPage.css";
 
 
 const {
@@ -231,7 +233,6 @@ export default function CustomersPage() {
         title: "Ações",
         key: "actions",
         align: "right",
-        fixed: "right",
         width: 110,
         render: (_, customer) => (
           <Button
@@ -295,25 +296,33 @@ export default function CustomersPage() {
 
 
   return (
-    <Space
-      orientation="vertical"
-      size="large"
-      style={{
-        width: "100%",
-      }}
-    >
-      <div>
-        <Title level={2}>
+    <div className="list-page">
+      <div className="list-page-header">
+        <Title
+          className="list-page-title"
+          level={2}
+        >
           Clientes
         </Title>
 
-        <Paragraph type="secondary">
+        <Paragraph
+          className="list-page-description"
+          type="secondary"
+        >
           Consulte clientes e acompanhe suas
           movimentações.
         </Paragraph>
       </div>
 
-      <Card>
+      <Card
+        className="list-page-filters-card"
+        title={
+          <Space>
+            <FilterOutlined />
+            Filtros
+          </Space>
+        }
+      >
         <Form
           form={form}
           layout="vertical"
@@ -322,13 +331,10 @@ export default function CustomersPage() {
           }}
           onFinish={handleSubmit}
         >
-          <Flex gap={16} wrap>
+          <div className="list-page-filter-grid">
             <Form.Item
               name="search"
               label="Buscar"
-              style={{
-                flex: "1 1 280px",
-              }}
             >
               <Input
                 allowClear
@@ -342,9 +348,6 @@ export default function CustomersPage() {
             <Form.Item
               name="state"
               label="Estado"
-              style={{
-                flex: "0 1 120px",
-              }}
             >
               <Input
                 allowClear
@@ -363,9 +366,6 @@ export default function CustomersPage() {
             <Form.Item
               name="is_active"
               label="Status"
-              style={{
-                flex: "0 1 180px",
-              }}
             >
               <Select
                 allowClear
@@ -386,17 +386,17 @@ export default function CustomersPage() {
             <Form.Item
               name="ordering"
               label="Ordenação"
-              style={{
-                flex: "0 1 230px",
-              }}
             >
               <Select
                 options={ORDERING_OPTIONS}
               />
             </Form.Item>
-          </Flex>
+          </div>
 
-          <Flex justify="flex-end" gap={8} wrap>
+          <Space
+            className="list-page-actions"
+            wrap
+          >
             <Button
               icon={<ReloadOutlined />}
               onClick={handleReset}
@@ -411,48 +411,81 @@ export default function CustomersPage() {
             >
               Aplicar filtros
             </Button>
-          </Flex>
+          </Space>
         </Form>
       </Card>
 
-      <Card>
-        <Table<Customer>
-          rowKey="id"
-          loading={loading}
-          columns={columns}
-          dataSource={customers}
-          scroll={{
-            x: 900,
-          }}
-          pagination={{
-            current: page,
-            pageSize,
-            total,
-            showSizeChanger: true,
-            pageSizeOptions: [
-              10,
-              20,
-              50,
-            ],
-            showTotal: (value) =>
-              `${value} clientes`,
-          }}
-          onChange={(pagination) => {
-            const nextPage =
-              pagination.current ?? 1;
+      <div className="list-page-table-section">
+        <Card
+          className="list-page-table-card"
+          title={
+            <div className="list-page-results-heading">
+              <Text
+                className="list-page-results-title"
+                strong
+              >
+                Resultados
+              </Text>
 
-            const nextPageSize =
-              pagination.pageSize ?? 10;
+              <Text
+                className="list-page-results-count"
+                type="secondary"
+              >
+                {total}{" "}
+                {total === 1
+                  ? "cliente encontrado"
+                  : "clientes encontrados"}
+              </Text>
+            </div>
+          }
+        >
+          <Table<Customer>
+            className="list-page-table"
+            rowKey="id"
+            size="middle"
+            loading={loading}
+            columns={columns}
+            dataSource={customers}
+            scroll={{
+              x: 900,
+            }}
+            pagination={{
+              current: page,
+              pageSize,
+              total,
+              showSizeChanger: true,
+              pageSizeOptions: [
+                10,
+                20,
+                50,
+              ],
+              showTotal: (
+                value,
+                range,
+              ) =>
+                `${range[0]}–${range[1]} de ${value}`,
+            }}
+            locale={{
+              emptyText:
+                "Nenhum cliente encontrado.",
+            }}
+            onChange={(pagination) => {
+              const nextPage =
+                pagination.current ?? 1;
 
-            void loadCustomers(
-              nextPageSize !== pageSize
-                ? 1
-                : nextPage,
-              nextPageSize,
-            );
-          }}
-        />
-      </Card>
-    </Space>
+              const nextPageSize =
+                pagination.pageSize ?? 10;
+
+              void loadCustomers(
+                nextPageSize !== pageSize
+                  ? 1
+                  : nextPage,
+                nextPageSize,
+              );
+            }}
+          />
+        </Card>
+      </div>
+    </div>
   );
 }

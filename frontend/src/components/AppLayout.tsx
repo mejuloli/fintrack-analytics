@@ -10,7 +10,9 @@ import {
 import {
   Avatar,
   Button,
+  Drawer,
   Flex,
+  Grid,
   Layout,
   Menu,
   Space,
@@ -26,9 +28,22 @@ import {
 
 import { useAuth } from "../hooks/useAuth";
 
+import "./AppLayout.css";
 
-const { Header, Content, Sider } = Layout;
-const { Text } = Typography;
+
+const {
+  Header,
+  Content,
+  Sider,
+} = Layout;
+
+const {
+  Text,
+} = Typography;
+
+const {
+  useBreakpoint,
+} = Grid;
 
 
 const menuItems = [
@@ -50,19 +65,87 @@ const menuItems = [
 ];
 
 
+interface SidebarContentProps {
+  selectedMenuKey: string;
+  onNavigate: (path: string) => void;
+  onToggle?: () => void;
+}
+
+
+function SidebarContent({
+  selectedMenuKey,
+  onNavigate,
+  onToggle,
+}: SidebarContentProps) {
+  return (
+    <div className="app-sidebar-content">
+      <div className="app-brand">
+        <SafetyCertificateOutlined
+          className="app-brand-icon"
+        />
+
+        <Text
+          className="app-brand-name"
+          strong
+        >
+          FinTrack Analytics
+        </Text>
+
+        {onToggle ? (
+          <Button
+            className="app-sidebar-toggle"
+            type="text"
+            aria-label="Fechar barra lateral"
+            title="Fechar barra lateral"
+            icon={<MenuFoldOutlined />}
+            onClick={onToggle}
+          />
+        ) : null}
+      </div>
+
+      <Menu
+        className="app-navigation"
+        theme="dark"
+        mode="inline"
+        selectedKeys={[selectedMenuKey]}
+        items={menuItems}
+        onClick={({ key }) => {
+          onNavigate(key);
+        }}
+      />
+    </div>
+  );
+}
+
+
 export function AppLayout() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout } = useAuth();
+  const screens = useBreakpoint();
 
-  const [collapsed, setCollapsed] = useState(false);
+  const {
+    user,
+    logout,
+  } = useAuth();
+
+  const isMobile = !screens.lg;
+
+  const [
+    desktopCollapsed,
+    setDesktopCollapsed,
+  ] = useState(false);
+
+  const [
+    mobileMenuOpen,
+    setMobileMenuOpen,
+  ] = useState(false);
 
 
   const selectedMenuKey =
     menuItems.find(
       (item) =>
-        location.pathname === item.key ||
-        location.pathname.startsWith(
+        location.pathname === item.key
+        || location.pathname.startsWith(
           `${item.key}/`,
         ),
     )?.key ?? "/dashboard";
@@ -70,97 +153,102 @@ export function AppLayout() {
 
   function handleLogout() {
     logout();
-    navigate("/login", {
-      replace: true,
-    });
+
+    navigate(
+      "/login",
+      {
+        replace: true,
+      },
+    );
+  }
+
+
+  function handleMenuNavigation(
+    path: string,
+  ) {
+    navigate(path);
+
+    if (isMobile) {
+      setMobileMenuOpen(false);
+    }
+  }
+
+
+  function handleMenuToggle() {
+    if (isMobile) {
+      setMobileMenuOpen(true);
+      return;
+    }
+
+    setDesktopCollapsed(
+      (current) => !current,
+    );
   }
 
 
   return (
-    <Layout style={{ minHeight: "100vh" }}>
-      <Sider
-        width={240}
-        breakpoint="lg"
-        collapsedWidth={0}
-        collapsed={collapsed}
-        onCollapse={setCollapsed}
-        trigger={null}
-        style={{
-          position: "sticky",
-          top: 0,
-          height: "100vh",
-          overflow: "auto",
+    <Layout className="app-shell">
+      {!isMobile ? (
+        <Sider
+          className="app-sidebar"
+          width={248}
+          collapsedWidth={0}
+          collapsed={desktopCollapsed}
+          trigger={null}
+        >
+          <SidebarContent
+            selectedMenuKey={selectedMenuKey}
+            onNavigate={handleMenuNavigation}
+          />
+        </Sider>
+      ) : null}
+
+      <Drawer
+        rootClassName="app-mobile-drawer"
+        placement="left"
+        width={280}
+        open={isMobile && mobileMenuOpen}
+        closable={false}
+        onClose={() => {
+          setMobileMenuOpen(false);
         }}
       >
-        <Flex
-          align="center"
-          gap={12}
-          style={{
-            height: 64,
-            paddingInline: 20,
-            color: "#ffffff",
-          }}
-        >
-          <SafetyCertificateOutlined
-            style={{
-              fontSize: 24,
-              flexShrink: 0,
-            }}
-          />
-
-          <Text
-            strong
-            style={{
-              color: "#ffffff",
-              fontSize: 16,
-              whiteSpace: "nowrap",
-            }}
-          >
-            FinTrack Analytics
-          </Text>
-        </Flex>
-
-        <Menu
-          theme="dark"
-          mode="inline"
-          selectedKeys={[selectedMenuKey]}
-          items={menuItems}
-          onClick={({ key }) => {
-            navigate(key);
+        <SidebarContent
+          selectedMenuKey={selectedMenuKey}
+          onNavigate={handleMenuNavigation}
+          onToggle={() => {
+            setMobileMenuOpen(false);
           }}
         />
-      </Sider>
+      </Drawer>
 
-      <Layout>
-        <Header
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            height: 64,
-            paddingInline: 20,
-            background: "#ffffff",
-            borderBottom: "1px solid #e5e7eb",
-          }}
-        >
+      <Layout className="app-main-layout">
+        <Header className="app-header">
           <Button
+            className="app-menu-toggle"
             type="text"
             aria-label={
-              collapsed
-                ? "Abrir menu lateral"
-                : "Fechar menu lateral"
+              isMobile || desktopCollapsed
+                ? "Abrir barra lateral"
+                : "Fechar barra lateral"
+            }
+            title={
+              isMobile || desktopCollapsed
+                ? "Abrir barra lateral"
+                : "Fechar barra lateral"
             }
             icon={
-              collapsed
+              isMobile || desktopCollapsed
                 ? <MenuUnfoldOutlined />
                 : <MenuFoldOutlined />
             }
-            onClick={() => {
-              setCollapsed((current) => !current);
-            }}
+            onClick={handleMenuToggle}
           />
 
-          <Space size={12}>
+          <Space
+            className="app-user-area"
+            size={12}
+          >
             <Avatar>
               {user?.name
                 .trim()
@@ -169,24 +257,26 @@ export function AppLayout() {
             </Avatar>
 
             <Flex
+              className="app-user-copy"
               vertical
-              style={{
-                lineHeight: 1.2,
-              }}
             >
-              <Text strong>{user?.name}</Text>
+              <Text
+                className="app-user-name"
+                strong
+              >
+                {user?.name}
+              </Text>
 
               <Text
+                className="app-user-email"
                 type="secondary"
-                style={{
-                  fontSize: 12,
-                }}
               >
                 {user?.email}
               </Text>
             </Flex>
 
             <Tag
+              className="app-user-role"
               color={
                 user?.role === "ADMIN"
                   ? "blue"
@@ -199,6 +289,7 @@ export function AppLayout() {
             </Tag>
 
             <Button
+              className="app-header-logout"
               type="text"
               danger
               icon={<LogoutOutlined />}
@@ -209,14 +300,10 @@ export function AppLayout() {
           </Space>
         </Header>
 
-        <Content
-          style={{
-            padding: 24,
-            background: "#f3f5f8",
-            overflow: "auto",
-          }}
-        >
-          <Outlet />
+        <Content className="app-content">
+          <main className="app-content-inner">
+            <Outlet />
+          </main>
         </Content>
       </Layout>
     </Layout>

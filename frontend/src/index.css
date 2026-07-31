@@ -7,17 +7,37 @@
     "Segoe UI",
     sans-serif;
 
-  color: #111827;
-  background: #f3f5f8;
+  color: #0f172a;
+  background: #f4f7fb;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+
+  --fintrack-bg: #f4f7fb;
+  --fintrack-surface: #ffffff;
+  --fintrack-sidebar: #061b2e;
+  --fintrack-sidebar-border:
+    rgba(255, 255, 255, 0.08);
+  --fintrack-border: #dbe3ee;
+  --fintrack-border-soft: #e8edf4;
+  --fintrack-text: #0f172a;
+  --fintrack-text-secondary: #64748b;
+  --fintrack-primary: #2563eb;
+  --fintrack-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 8px 24px rgba(15, 23, 42, 0.04);
 }
 
 * {
   box-sizing: border-box;
 }
 
-html,
+html {
+  min-width: 320px;
+  min-height: 100%;
+  background: var(--fintrack-bg);
+  scroll-behavior: auto;
+}
+
 body,
 #root {
   min-width: 320px;
@@ -27,9 +47,51 @@ body,
 
 body {
   min-height: 100vh;
+  overflow-x: hidden;
+  color: var(--fintrack-text);
+  background: var(--fintrack-bg);
 }
 
 button,
-input {
+input,
+select,
+textarea {
   font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  color: #ffffff;
+  background: var(--fintrack-primary);
+}
+
+:focus-visible {
+  outline: 3px solid rgba(37, 99, 235, 0.28);
+  outline-offset: 2px;
+}
+
+.ant-card {
+  border-color: var(--fintrack-border-soft);
+  box-shadow: var(--fintrack-shadow);
+}
+
+.ant-card-head {
+  border-bottom-color: var(--fintrack-border-soft);
+}
+
+.ant-table-wrapper {
+  min-width: 0;
+}
+
+.ant-table-thead > tr > th {
+  color: #334155;
+  font-weight: 600;
+}
+
+.ant-typography {
+  color: inherit;
 }
