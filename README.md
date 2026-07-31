@@ -70,9 +70,9 @@ docker compose up --build -d
 
 ## Serviços
 
-- Frontend: http://localhost:5173
-- Backend: http://localhost:8000
-- Django Admin: http://localhost:8000/admin
+- Frontend: http://localhost:5174
+- Backend: http://localhost:8001
+- Django Admin: http://localhost:8001/admin
 - PostgreSQL: localhost:5433
 
 ## Criar administrador

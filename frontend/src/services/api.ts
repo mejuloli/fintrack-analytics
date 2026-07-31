@@ -20,7 +20,7 @@ import {
 
 const API_URL =
   import.meta.env.VITE_API_URL ??
-  "http://localhost:8000/api";
+  "http://localhost:8001/api";
 
 
 interface RetryableRequestConfig
