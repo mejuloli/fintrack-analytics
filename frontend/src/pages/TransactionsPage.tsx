@@ -59,6 +59,8 @@ import {
   formatDateTime,
 } from "../utils/formatters";
 
+import "./ListPage.css";
+
 
 const { Paragraph, Text, Title } = Typography;
 
@@ -515,7 +517,6 @@ export default function TransactionsPage() {
       dataIndex: "external_id",
       key: "external_id",
       width: 150,
-      fixed: "left",
       render: (value: string) => (
         <Text code>{value}</Text>
       ),
@@ -602,7 +603,6 @@ export default function TransactionsPage() {
       key: "actions",
       width: 100,
       align: "center",
-      fixed: "right",
       render: (_, transaction) => (
         <Button
           type="link"
@@ -625,12 +625,10 @@ export default function TransactionsPage() {
 
 
   return (
-    <>
+    <div className="list-page">
       <Space
+        className="list-page-header"
         align="start"
-        style={{
-          marginBottom: 16,
-        }}
       >
         {filters.customer ? (
           <Button
@@ -645,19 +643,15 @@ export default function TransactionsPage() {
 
         <div>
           <Title
+            className="list-page-title"
             level={2}
-            style={{
-              marginBottom: 4,
-            }}
           >
             Transações
           </Title>
 
           <Paragraph
+            className="list-page-description"
             type="secondary"
-            style={{
-              marginBottom: 0,
-            }}
           >
             Consulte e filtre as transações registradas
             na plataforma.
@@ -667,6 +661,7 @@ export default function TransactionsPage() {
 
       {filters.customer ? (
         <Alert
+          className="list-page-alert"
           type="info"
           showIcon
           message="Filtro de cliente aplicado"
@@ -689,15 +684,13 @@ export default function TransactionsPage() {
       ) : null}
 
       <Card
+        className="list-page-filters-card"
         title={
           <Space>
             <FilterOutlined />
             Filtros
           </Space>
         }
-        style={{
-          marginBottom: 16,
-        }}
       >
         <Form<FilterFormValues>
           form={form}
@@ -843,7 +836,10 @@ export default function TransactionsPage() {
             </Col>
           </Row>
 
-          <Space wrap>
+          <Space
+            className="list-page-actions"
+            wrap
+          >
             <Button
               type="primary"
               htmlType="submit"
@@ -884,6 +880,7 @@ export default function TransactionsPage() {
 
       {errorMessage && (
         <Alert
+          className="list-page-alert"
           type="error"
           showIcon
           message={errorMessage}
@@ -904,7 +901,7 @@ export default function TransactionsPage() {
       )}
 
       {loading && data.results.length === 0 ? (
-        <Card>
+        <Card className="list-page-loading-card">
           <Skeleton
             active
             title={false}
@@ -916,18 +913,40 @@ export default function TransactionsPage() {
       ) : (
         <div
           ref={tableSectionRef}
-          style={{
-            scrollMarginTop: 88,
-          }}
+          className="list-page-table-section"
         >
-          <Card>
+          <Card
+            className="list-page-table-card"
+            title={
+              <div className="list-page-results-heading">
+                <Text
+                  className="list-page-results-title"
+                  strong
+                >
+                  Resultados
+                </Text>
+
+                <Text
+                  className="list-page-results-count"
+                  type="secondary"
+                >
+                  {data.count}{" "}
+                  {data.count === 1
+                    ? "transação encontrada"
+                    : "transações encontradas"}
+                </Text>
+              </div>
+            }
+          >
             <Table<Transaction>
+              className="list-page-table"
               rowKey="id"
+              size="middle"
               loading={loading}
               columns={columns}
               dataSource={data.results}
               scroll={{
-                x: 1410,
+                x: 1400,
               }}
               pagination={{
                 current: data.page,
@@ -940,8 +959,11 @@ export default function TransactionsPage() {
                   50,
                   100,
                 ],
-                showTotal: (total) =>
-                  `${total} transações`,
+                showTotal: (
+                  total,
+                  range,
+                ) =>
+                  `${range[0]}–${range[1]} de ${total}`,
                 onChange: (
                   page,
                   pageSize,
@@ -963,6 +985,6 @@ export default function TransactionsPage() {
           </Card>
         </div>
       )}
-    </>
+    </div>
   );
 }
