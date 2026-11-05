@@ -1,12 +1,17 @@
+
 # FinTrack Analytics
 
-Plataforma full stack para importação, validação e análise de
-transações financeiras fictícias.
+A full-stack application for importing, validating, and analyzing synthetic financial transactions.
 
-> Este projeto utiliza somente dados sintéticos e não representa
-> clientes ou operações financeiras reais.
+> **Disclaimer:** This project uses exclusively synthetic data for educational and demonstration purposes. It does not represent real customers or financial operations.
 
-## Tecnologias
+## Overview
+
+FinTrack Analytics is a full-stack project designed to explore financial data processing, REST API development, authentication, relational databases, and containerized application deployment.
+
+The application combines a React-based frontend with a Django REST Framework backend and PostgreSQL database.
+
+## Tech Stack
 
 ### Frontend
 
@@ -25,105 +30,144 @@ transações financeiras fictícias.
 - Simple JWT
 - PostgreSQL
 
-### Infraestrutura
+### Infrastructure
 
 - Docker
 - Docker Compose
 
-## Requisitos
+## Requirements
 
 - Git
 - Docker
 - Docker Compose
 
-Não é necessário instalar Python, Node.js ou PostgreSQL diretamente
-na máquina.
+Python, Node.js, and PostgreSQL do not need to be installed directly on your machine.
 
-## Configuração
+## Getting Started
 
-Crie o arquivo local de variáveis de ambiente:
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/mejuloli/fintrack-analytics.git
+cd fintrack-analytics
+```
+
+### 2. Configure environment variables
+
+Create a local environment configuration file:
 
 ```bash
 cp .env.example .env
 ```
 
-Gere uma chave para o Django e substitua o valor de
-`DJANGO_SECRET_KEY` no arquivo `.env`:
+Generate a Django secret key:
 
 ```bash
 openssl rand -hex 40
 ```
 
-## Execução local
+Replace the `DJANGO_SECRET_KEY` value in your `.env` file with the generated key.
 
-Suba os serviços:
+### 3. Start the application
+
+Build and start all services:
 
 ```bash
 docker compose up --build
 ```
 
-Para executar em segundo plano:
+To run the application in detached mode:
 
 ```bash
 docker compose up --build -d
 ```
 
-## Serviços
+## Local Services
 
-- Frontend: http://localhost:5174
-- Backend: http://localhost:8001
-- Django Admin: http://localhost:8001/admin
-- PostgreSQL: localhost:5433
+| Service | Address |
+|---|---|
+| Frontend | http://localhost:5174 |
+| Backend | http://localhost:8001 |
+| Django Admin | http://localhost:8001/admin |
+| PostgreSQL | localhost:5433 |
 
-## Criar administrador
+## Create an Administrator
+
+Run the following command:
 
 ```bash
 docker compose exec backend \
   python manage.py createsuperuser
 ```
 
-## Endpoints iniciais
+Follow the instructions to create a Django administrator account.
 
-### Verificação de saúde
+## API Endpoints
 
-```text
+### Health Check
+
+```http
 GET /api/health/
 ```
 
-### Autenticação
+### Authentication
 
-```text
+```http
 POST /api/auth/login/
 POST /api/auth/refresh/
-GET  /api/auth/me/
+GET /api/auth/me/
 ```
 
-O endpoint `/api/auth/me/` exige o access token:
+The `/api/auth/me/` endpoint requires a valid access token.
 
-```text
+Include the token in the request header:
+
+```http
 Authorization: Bearer ACCESS_TOKEN
 ```
 
-## Validação
+## Validation
 
-Backend:
+### Backend
+
+Run Django system checks:
 
 ```bash
 docker compose exec backend \
   python manage.py check
 ```
 
-Frontend:
+### Frontend
+
+Run ESLint:
 
 ```bash
 docker compose exec frontend \
   npm run lint
+```
 
+Build the frontend:
+
+```bash
 docker compose exec frontend \
   npm run build
 ```
 
-## Aviso
+## Key Concepts
 
-Os dados utilizados neste projeto são inteiramente fictícios e
-gerados somente para fins de estudo e demonstração.
+This project explores:
+
+- Full-stack web development
+- RESTful API integration
+- Financial transaction data processing
+- Data validation
+- JWT-based authentication
+- Relational database management
+- Containerized development environments
+- Separation of frontend and backend responsibilities
+
+## Disclaimer
+
+All financial information used in this project is entirely fictional and generated exclusively for educational and demonstration purposes.
+
+No real financial transactions, customer information, or banking data are involved.
